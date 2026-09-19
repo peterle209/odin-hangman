@@ -3,6 +3,8 @@ class HangmanWord
   MAX_LENGTH = 12
   POSSIBLEWORDS = 9894
 
+  attr_reader :word
+
   def initialize
     @word = get_word
   end
@@ -13,7 +15,7 @@ class HangmanWord
       random_idx = rand(POSSIBLEWORDS)
       word = File.readlines('dict.txt')[random_idx]
     end
-    word
+    word.chomp
   end
 
   def check_valid(word)
