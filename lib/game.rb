@@ -1,6 +1,9 @@
 require_relative "hangman_word.rb"
 
 class Game
+  attr_accessor :word, :guess_correctness, :previous_guesses, :correct_guesses
+
+
   def initialize
     @word = HangmanWord.new.word
     @guess_correctness = @word.gsub(/[a-z]/,'_')
@@ -63,10 +66,49 @@ class Game
     end
     guess
   end
+
+  def save
+    serialized_obj = Marshal.dump(self)
+    unless Dir.exist?('saves')
+      Dir.mkdir('saves')
+    end
+    puts "What would you like your save file to be called?"
+    save_title = "./saves/#{gets.chomp}.txt"
+    save_file = File.open(save_title,'wb')
+    save_file.write serialized_obj
+    save_file.close
+    puts 'Save success!'
+  end
+  
+  def load
+    unless Dir.exist?('saves')
+      puts "You have no existing save files!"
+      return false
+    end
+    puts "What file would you like to load from? (omit .txt and directory path, enter only file title)"
+    save_title = "./saves/#{gets.chomp}.txt"
+    until File.exist?(save_title)
+      puts "This save file does not exist. Try re-inputting, otherwise type 'quit'"
+      save_title = gets.chomp
+      return false if save_title == 'quit'
+      save_title = "./saves/#{save_title}.txt"
+    end
+    save = File.read(save_title)
+    save = Marshal.load(save)
+    @correct_guesses = save.correct_guesses
+    @word = save.word
+    @guess_correctness = save.guess_correctness
+    @previous_guesses = save.previous_guesses
+  end
 end
+
 
 test = Game.new
 
-until test.guess
+test.save
+
+test.load
+
+# until test.guess
   
-end
+# end
