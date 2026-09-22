@@ -4,7 +4,11 @@ class Game
   attr_accessor :word, :guess_correctness, :previous_guesses, :correct_guesses
 
 
-  def initialize
+  def initialize(load)
+    if load
+      load()
+      return
+    end
     @word = HangmanWord.new.word
     @guess_correctness = @word.gsub(/[a-z]/,'_')
     @previous_guesses = Array.new
@@ -15,6 +19,14 @@ class Game
     print print_current_progress
     print_previous_guesses
     print_correct_guesses
+    puts "Would you like to save the current game state?(y/n)"
+    if gets.chomp == 'y'
+      save
+      puts "Would you like to quit? (y/n)"
+      if gets.chomp == 'y'
+        return true
+      end
+    end
     current_guess = get_character_input
     @previous_guesses.push current_guess
     @word.chars.each_with_index do |curr_letter, idx|
@@ -101,14 +113,3 @@ class Game
     @previous_guesses = save.previous_guesses
   end
 end
-
-
-test = Game.new
-
-test.save
-
-test.load
-
-# until test.guess
-  
-# end
